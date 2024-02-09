@@ -14,19 +14,19 @@ MYNAME=$(basename "$0")
 usage () {
     echo "Usage: $MYNAME [activate|destroy|list]"
     echo ""
-    echo "This script is a thin wrapper around terraform workspaces to enable private"
+    echo "This script is a thin wrapper around tofu workspaces to enable private"
     echo "development environment setup for testing Azure infra changes."
     echo ""
     echo "COMMANDS"
     echo "   activate    Activate private infra development environment"
     echo "   destroy     Destroy private infra development environment"
-    echo "   list        List current terraform workspaces"
+    echo "   list        List current tofu workspaces"
     echo ""
     echo ""
     echo " EXAMPLE:"
     echo "    ./$MYNAME activate"
     echo ""
-    echo "    Activate and - unless already created - create a new terraform workspace"
+    echo "    Activate and - unless already created - create a new tofu workspace"
     echo "    to allow testing the infra setup in a private development environment."
     echo ""
     echo ""
@@ -69,28 +69,28 @@ generate_azure_private_workspace_name () {
 
 activate () {
     echo "[+] Activating workspace: '$WORKSPACE'"
-    if terraform workspace list | grep -qP "\s$WORKSPACE\$"; then
-        terraform workspace select "$WORKSPACE"
+    if tofu workspace list | grep -qP "\s$WORKSPACE\$"; then
+        tofu workspace select "$WORKSPACE"
     else
-        terraform workspace new "$WORKSPACE"
-        terraform workspace select "$WORKSPACE"
+        tofu workspace new "$WORKSPACE"
+        tofu workspace select "$WORKSPACE"
     fi
-    echo "[+] Done, use terraform [validate|plan|apply] to work with your dev infra"
+    echo "[+] Done, use tofu [validate|plan|apply] to work with your dev infra"
 }
 
 destroy () {
-    if ! terraform workspace list | grep -qP "\s$WORKSPACE\$"; then
+    if ! tofu workspace list | grep -qP "\s$WORKSPACE\$"; then
         echo "[+] Devenv workspace '$WORKSPACE' does not exist, nothing to destroy"
         exit 0
     fi
     echo "[+] Destroying workspace: '$WORKSPACE'"
-    terraform workspace select "$WORKSPACE"
-    terraform apply -destroy -auto-approve
+    tofu workspace select "$WORKSPACE"
+    tofu apply -destroy -auto-approve
 }
 
 list () {
-    echo "Terraform workspaces:"
-    terraform workspace list
+    echo "tofu workspaces:"
+    tofu workspace list
 }
 
 ################################################################################
@@ -107,7 +107,7 @@ main () {
     fi
 
     exit_unless_command_exists az
-    exit_unless_command_exists terraform
+    exit_unless_command_exists tofu
     exit_unless_command_exists nix-store
     exit_unless_command_exists jq
     exit_unless_command_exists sed
@@ -118,8 +118,8 @@ main () {
     # Assigns $WORKSPACE variable
     generate_azure_private_workspace_name
 
-    # It is safe to run terraform init multiple times
-    terraform init &> /dev/null
+    # It is safe to run tofu init multiple times
+    tofu init &> /dev/null
 
     # Run the given command
     if [ "$1" == "activate" ]; then
