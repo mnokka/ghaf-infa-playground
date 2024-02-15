@@ -3,6 +3,11 @@ SPDX-FileCopyrightText: 2023 Technology Innovation Institute (TII)
 
 SPDX-License-Identifier: CC-BY-SA-4.0
 -->
+<br>
+<br>
+*azure-images branch: POC to replace "playground" (single VM) creation to use OpenTofu*
+<br>
+<br>
 
 # Ghaf Infra
 This repository contains NixOS configurations for the [Ghaf](https://github.com/tiiuae/ghaf) CI/CD infrastructure.
